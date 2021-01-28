@@ -97,7 +97,7 @@ def random_shadow(image):
     # as x2 == x1 causes zero-division problem, we'll write it in the below form:
     # (ym-y1)*(x2-x1) - (y2-y1)*(xm-x1) > 0
     mask = np.zeros_like(image[:, :, 1])
-    mask[(ym - y1) * (x2 - x1) - (y2 - y1) * (xm - x1) > 0] = 1
+    mask[np.where((ym - y1) * (x2 - x1) - (y2 - y1) * (xm - x1) > 0)] = 1
 
     # choose which side should have shadow and adjust saturation
     cond = mask == np.random.randint(2)
@@ -120,9 +120,9 @@ def random_brightness(image):
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
 
-def augument(data_dir, center, left, right, steering_angle, range_x=100, range_y=10):
+def augment(data_dir, center, left, right, steering_angle, range_x=100, range_y=10):
     """
-    Generate an augumented image and adjust steering angle.
+    Generate an augmented image and adjust steering angle.
     (The steering angle is associated with the center image)
     """
     image, steering_angle = choose_image(data_dir, center, left, right, steering_angle)
@@ -146,7 +146,7 @@ def batch_generator(data_dir, image_paths, steering_angles, batch_size, is_train
             steering_angle = steering_angles[index]
             # argumentation
             if is_training and np.random.rand() < 0.6:
-                image, steering_angle = augument(data_dir, center, left, right, steering_angle)
+                image, steering_angle = augment(data_dir, center, left, right, steering_angle)
             else:
                 image = load_image(data_dir, center) 
             # add the image and steering angle to the batch
